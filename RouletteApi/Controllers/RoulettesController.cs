@@ -48,7 +48,7 @@ namespace RouletteApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IResult> Create([FromBody] Roulette roulette)
+        public async Task<IResult> Index([FromBody] Roulette roulette)
         {
             database.Add(roulette);
             await database.SaveChangesAsync();
