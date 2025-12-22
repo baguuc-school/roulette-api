@@ -110,11 +110,7 @@
             color: #2c3e50;
         }
         
-        .timestamp {
-            color: #7f8c8d;
-        }
-        
-        .item {
+        .total-score {
             font-weight: 700;
             color: #27ae60;
         }
@@ -131,16 +127,15 @@
     <div class="container">
         <header>
             <h1>Leaderboard</h1>
-            <p class="subtitle">Najlepsze wygrane użytkowników</p>
+            <p class="subtitle">Użytkownicy z największymi wygranymi</p>
         </header>
         
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Data</th>
                         <th>Użytkownik</th>
-                        <th>Przedmiot</th>
+                        <th>Łączny wynik</th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
@@ -153,26 +148,21 @@
 
 <script defer>
     async function setupTableRows() {
-        const response = await fetch("/rewards/top");
+        const response = await fetch("/rewards/topUsers");
         const json = await response.json();
         
         for(let row of json) {
             const root = document.createElement("tr");
 
             const dateCell = document.createElement("td");
-            dateCell.textContent = row.timestamp;
+            dateCell.textContent = row.username;
             dateCell.className = "username";
             root.append(dateCell);
 
-            const usernameCell = document.createElement("td");
-            usernameCell.textContent = row.username;
-            usernameCell.className = "timestamp";
-            root.append(usernameCell);
-
-            const itemValueCell = document.createElement("td");
-            itemValueCell.textContent = `${row.item.name} (C$ ${row.item.value})`;
-            itemValueCell.className = "item";
-            root.append(itemValueCell);
+            const totalScoreValueCell = document.createElement("td");
+            totalScoreValueCell.textContent = `C$ ${row.totalScore}`;
+            totalScoreValueCell.className = "total-score";
+            root.append(totalScoreValueCell);
 
             document.getElementById("table-body").append(root);
             console.log(row);

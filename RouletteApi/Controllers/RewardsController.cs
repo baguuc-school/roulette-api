@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RouletteApi.Context;
 using RouletteApi.Models;
+using System.Linq;
 
 namespace RouletteApi.Controllers
 {
@@ -14,15 +15,19 @@ namespace RouletteApi.Controllers
             database = context;
         }
 
-        public async Task<IResult> Top()
+        public async Task<IResult> TopUsers()
         {
-            var rewards = await database.Rewards
-                .Include(reward => reward.Item)
-                .OrderByDescending(reward => reward.Item.Value)
+            List<UserRewardScore> scores = database.Set<RecordedReward>().GroupBy(record => record.Username)
+                .Select(r => new UserRewardScore
+                {
+                    Username = r.Key,
+                    TotalScore = r.Sum(r => r.Item.Value)
+                })
                 .Take(5)
-                .ToListAsync();
+                .OrderByDescending(record => record.TotalScore)
+                .ToList();
 
-            return Results.Ok(rewards);
+            return Results.Ok(scores);
         }
 
         [HttpPost]
