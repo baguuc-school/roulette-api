@@ -14,7 +14,7 @@ namespace RouletteApi.Controllers
             database = context;
         }
 
-        public async Task<IResult> Index()
+        public async Task<IResult> Top()
         {
             var rewards = await database.Rewards
                 .Include(reward => reward.Item)
