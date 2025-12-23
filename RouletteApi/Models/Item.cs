@@ -1,6 +1,8 @@
-﻿namespace RouletteApi.Models
+﻿using RouletteApi.Utils;
+
+namespace RouletteApi.Models
 {
-    public class Item
+    public class Item : IWeightedItem
     {
         public int Id { get; set; }
         public string Name { get; set; }

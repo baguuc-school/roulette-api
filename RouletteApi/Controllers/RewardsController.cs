@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RouletteApi.Context;
 using RouletteApi.Models;
+using RouletteApi.Utils;
 using System.Linq;
 
 namespace RouletteApi.Controllers
@@ -9,10 +10,12 @@ namespace RouletteApi.Controllers
     public class RewardsController : Controller
     {
         private readonly DatabaseContext database;
+        private readonly Random random;
 
         public RewardsController(DatabaseContext context)
         {
             database = context;
+            random = new Random();
         }
 
         public async Task<IResult> TopUsers()
@@ -31,12 +34,31 @@ namespace RouletteApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IResult> Index([FromBody] RecordedReward reward)
+        public async Task<IResult> Index([FromBody] RollStartData data)
         {
+            var roulette = database.Set<Roulette>()
+                .Include(r => r.Items)
+                .Where(r => r.Id == data.RouletteId)
+                .FirstOrDefault();
+
+
+            var itemId = Utils.Utils.WeightedPick(roulette.Items, random).Id;
+            var item = database.Set<Item>()
+                .Where(i => i.Id == itemId)
+                .FirstOrDefault();
+
+            RecordedReward reward = new RecordedReward
+            {
+                Timestamp = DateTime.UtcNow,
+                Username = data.Username,
+                ItemId = item.Id
+            };
+
             database.Add(reward);
             await database.SaveChangesAsync();
 
-            return Results.Created();
+
+            return Results.Ok(reward);
         }
     }
 }
