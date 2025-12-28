@@ -26,8 +26,8 @@ namespace RouletteApi.Controllers
                     Username = r.Key,
                     TotalScore = r.Sum(r => r.Item.Value)
                 })
-                .Take(5)
                 .OrderByDescending(record => record.TotalScore)
+                .Take(5)
                 .ToList();
 
             return Results.Ok(scores);
